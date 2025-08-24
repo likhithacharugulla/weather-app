@@ -1,0 +1,79 @@
+<div class="weather-container">
+  <!-- Header -->
+  <div class="header">
+    <h2>&#9925; Weather Forecast</h2>
+    <select [(ngModel)]="selectedCity" (change)="onCityChange()" class="city-dropdown">
+      <option *ngFor="let val of cities" [ngValue]="val">{{ val.label }}</option>
+    </select>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!selectedCity?.city" class="empty-state">
+      <p >Please select a city to see the forecast</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="errorOccured" class="empty-state">
+    <p  style="color: red;">{{errorMessage}}</p>
+  </div>
+
+  <!-- Current Weather Overview -->
+  <div *ngIf="forecast.length > 0" class="current-overview">
+    <!-- Left: City + Current Weather -->
+    <div class="overview-left" *ngIf="cityData">
+      <h2>{{ cityData.name }}, {{ cityData.country }}</h2>
+      <p>{{ getCityLocalTime() }}</p>
+
+      <img [src]="'http://openweathermap.org/img/wn/' + forecast[0].icon + '@4x.png'" height="100px" width="100px" [alt]="forecast[0].description" />
+      <h1>{{ forecast[0].avgTemp }}°C</h1>
+
+      <p class="description">{{ forecast[0].description }}</p>
+      <p class="suggestion">{{ todaySuggestion }}</p>
+    </div>
+
+    <!-- Right: Today's Highlights -->
+    <div class="overview-right">
+      <h3>Today's Highlights</h3>
+      <div class="highlights-grid">
+        <div class="highlight-card">
+          <h4>💧 Humidity</h4>
+          <p>{{ forecast[0].avgHumidity }}%</p>
+        </div>
+        <div class="highlight-card">
+          <h4>💨 Wind Speed</h4>
+          <p>{{ forecast[0].avgWind }} m/s</p>
+        </div>
+        <div class="highlight-card">
+          <h4>🌡️ Feels Like</h4>
+          <p>{{ forecast[0].feelsLike }}°C</p>
+        </div>
+        <div class="highlight-card">
+          <h4>☁ Cloudiness</h4>
+          <p>{{ forecast[0].cloudiness }}%</p>
+        </div>
+        <div class="highlight-card">
+          <h4>🌅 Sunrise</h4>
+          <p>{{ (cityData && cityData.sunrise  * 1000) | date:'hh:mm a' }}</p>
+        </div>
+        <div class="highlight-card">
+          <h4>🌇 Sunset</h4>
+          <p>{{ (cityData && cityData.sunset * 1000) | date:'hh:mm a' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forecast cards (bottom section) -->
+  <div *ngIf="forecast.length > 0" class="forecast-grid">
+    <div *ngFor="let day of forecast; let i = index"
+         class="forecast-card"
+         [class.today]="i === 0">
+      <h4>{{ day.date | date:'EEE, MMM d' }}</h4>
+      <img [src]="'http://openweathermap.org/img/wn/' + day.icon + '@2x.png'" [alt]="day.description" />
+      <p class="desc">{{ day.description }}</p>
+      <p>{{ day.minTemp }}°C / {{ day.maxTemp }}°C</p>
+      <p>Wind: {{ day.avgWind }} m/s</p>
+      <p>Humidity: {{ day.avgHumidity }}%</p>
+    </div>
+  </div>
+</div>
